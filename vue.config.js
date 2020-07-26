@@ -1,4 +1,8 @@
 // vue.config.js
 module.exports = {
-  lintOnSave: false
+  lintOnSave: false,
+  devServer: {
+    port: 9090,
+    open: true
+  }
 }
