@@ -36,7 +36,7 @@
                     <i class="el-icon-caret-right"></i>
                   </el-col>
                   <el-col :span="18">
-                    <el-tag type="warning" v-for="(item3, i3) in item2.children" :key="item3.id" closable @close="removeRightById(scope.row, item3.id)">{{item3.authName}}</el-tag>
+                    <el-tag type="warning" v-for="item3 in item2.children" :key="item3.id" closable @close="removeRightById(scope.row, item3.id)">{{item3.authName}}</el-tag>
                   </el-col>
                 </el-row>
               </el-col>
@@ -74,126 +74,126 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        // 所有角色列表数据
-        rolelist: [],
-        // 控制分配权限对话框的显示与隐藏
-        setRightDialogVisible: false,
-        // 所有权限的数据
-        rightslist: [],
-        // 树形控件的属性绑定对象
-        treeProps: {
-          label: 'authName',
-          children: 'children'
-        },
-        // 默认选中的节点Id值数组
-        defKeys: [],
-        // 当前即将分配权限的角色id
-        roleId: ''
+export default {
+  data () {
+    return {
+      // 所有角色列表数据
+      rolelist: [],
+      // 控制分配权限对话框的显示与隐藏
+      setRightDialogVisible: false,
+      // 所有权限的数据
+      rightslist: [],
+      // 树形控件的属性绑定对象
+      treeProps: {
+        label: 'authName',
+        children: 'children'
+      },
+      // 默认选中的节点Id值数组
+      defKeys: [],
+      // 当前即将分配权限的角色id
+      roleId: ''
+    }
+  },
+  created () {
+    this.getRolesList()
+  },
+  methods: {
+    // 获取所有角色的列表
+    async getRolesList () {
+      const { data: res } = await this.$http.get('roles')
+
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取角色列表失败！')
       }
+
+      this.rolelist = res.data
+
+      console.log(this.rolelist)
     },
-    created() {
-      this.getRolesList()
-    },
-    methods: {
-      // 获取所有角色的列表
-      async getRolesList() {
-        const { data: res } = await this.$http.get('roles')
-
-        if (res.meta.status !== 200) {
-          return this.$message.error('获取角色列表失败！')
+    // 根据Id删除对应的权限
+    async removeRightById (role, rightId) {
+      // 弹框提示用户是否要删除
+      const confirmResult = await this.$confirm(
+        '此操作将永久删除该文件, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         }
+      ).catch(err => err)
 
-        this.rolelist = res.data
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('取消了删除！')
+      }
 
-        console.log(this.rolelist)
-      },
-      // 根据Id删除对应的权限
-      async removeRightById(role, rightId) {
-        // 弹框提示用户是否要删除
-        const confirmResult = await this.$confirm(
-          '此操作将永久删除该文件, 是否继续?',
-          '提示',
-          {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }
-        ).catch(err => err)
-
-        if (confirmResult !== 'confirm') {
-          return this.$message.info('取消了删除！')
-        }
-
-        const { data: res } = await this.$http.delete(
+      const { data: res } = await this.$http.delete(
           `roles/${role.id}/rights/${rightId}`
-        )
+      )
 
-        if (res.meta.status !== 200) {
-          return this.$message.error('删除权限失败！')
-        }
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除权限失败！')
+      }
 
-        // this.getRolesList()
-        role.children = res.data
-      },
-      // 展示分配权限的对话框
-      async showSetRightDialog(role) {
-        this.roleId = role.id
-        // 获取所有权限的数据
-        const { data: res } = await this.$http.get('rights/tree')
+      // this.getRolesList()
+      role.children = res.data
+    },
+    // 展示分配权限的对话框
+    async showSetRightDialog (role) {
+      this.roleId = role.id
+      // 获取所有权限的数据
+      const { data: res } = await this.$http.get('rights/tree')
 
-        if (res.meta.status !== 200) {
-          return this.$message.error('获取权限数据失败！')
-        }
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取权限数据失败！')
+      }
 
-        // 把获取到的权限数据保存到 data 中
-        this.rightslist = res.data
-        console.log(this.rightslist)
+      // 把获取到的权限数据保存到 data 中
+      this.rightslist = res.data
+      console.log(this.rightslist)
 
-        // 递归获取三级节点的Id
-        this.getLeafKeys(role, this.defKeys)
+      // 递归获取三级节点的Id
+      this.getLeafKeys(role, this.defKeys)
 
-        this.setRightDialogVisible = true
-      },
-      // 通过递归的形式，获取角色下所有三级权限的id，并保存到 defKeys 数组中
-      getLeafKeys(node, arr) {
-        // 如果当前 node 节点不包含 children 属性，则是三级节点
-        if (!node.children) {
-          return arr.push(node.id)
-        }
+      this.setRightDialogVisible = true
+    },
+    // 通过递归的形式，获取角色下所有三级权限的id，并保存到 defKeys 数组中
+    getLeafKeys (node, arr) {
+      // 如果当前 node 节点不包含 children 属性，则是三级节点
+      if (!node.children) {
+        return arr.push(node.id)
+      }
 
-        node.children.forEach(item => this.getLeafKeys(item, arr))
-      },
-      // 监听分配权限对话框的关闭事件
-      setRightDialogClosed() {
-        this.defKeys = []
-      },
-      // 点击为角色分配权限
-      async allotRights() {
-        const keys = [
-          ...this.$refs.treeRef.getCheckedKeys(),
-          ...this.$refs.treeRef.getHalfCheckedKeys()
-        ]
+      node.children.forEach(item => this.getLeafKeys(item, arr))
+    },
+    // 监听分配权限对话框的关闭事件
+    setRightDialogClosed () {
+      this.defKeys = []
+    },
+    // 点击为角色分配权限
+    async allotRights () {
+      const keys = [
+        ...this.$refs.treeRef.getCheckedKeys(),
+        ...this.$refs.treeRef.getHalfCheckedKeys()
+      ]
 
-        const idStr = keys.join(',')
+      const idStr = keys.join(',')
 
-        const { data: res } = await this.$http.post(
+      const { data: res } = await this.$http.post(
           `roles/${this.roleId}/rights`,
           { rids: idStr }
-        )
+      )
 
-        if (res.meta.status !== 200) {
-          return this.$message.error('分配权限失败！')
-        }
-
-        this.$message.success('分配权限成功！')
-        this.getRolesList()
-        this.setRightDialogVisible = false
+      if (res.meta.status !== 200) {
+        return this.$message.error('分配权限失败！')
       }
+
+      this.$message.success('分配权限成功！')
+      this.getRolesList()
+      this.setRightDialogVisible = false
     }
   }
+}
 </script>
 
 <style lang="less" scoped>

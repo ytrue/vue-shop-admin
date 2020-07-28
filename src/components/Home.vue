@@ -61,55 +61,55 @@
 </template>
 
 <script>
-  export default {
-    name: "Home",
-    data() {
-      return {
-        // 左侧菜单数据
-        menulist: [],
-        // 是否折叠
-        isCollapse: false,
-        // 被激活的链接地址
-        activePath: '',
-        iconsObj: {
-          '125': 'iconfont icon-user',
-          '103': 'iconfont icon-tijikongjian',
-          '101': 'iconfont icon-shangpin',
-          '102': 'iconfont icon-danju',
-          '145': 'iconfont icon-baobiao'
-        },
-      }
-    },
-    created() {
-      //https://www.jianshu.com/p/5cd198945d41 vue生命周期
-      //https://blog.csdn.net/weixin_38173313/article/details/98731339
-      //vue统一处理全局异常
-      this.getMenuList();
-      this.activePath = window.sessionStorage.getItem('activePath')
-    },
-    methods: {
-      //注销
-      logout() {
-        window.sessionStorage.clear()
-        this.$router.push('/login')
-      },
-      // 获取所有的菜单
-      async getMenuList() {
-        const {data: res} = await this.$http.get('menus');
-        if (res.meta.status !== 200) return this.$message.error(res.meta.msg);
-        this.menulist = res.data;
-      },
-      // 点击按钮，切换菜单的折叠与展开
-      toggleCollapse() {
-        this.isCollapse = !this.isCollapse
-      },
-      // 保存链接的激活状态
-      saveNavState(activePath) {
-        window.sessionStorage.setItem('activePath', activePath)
-        this.activePath = activePath
+export default {
+  name: 'Home',
+  data () {
+    return {
+      // 左侧菜单数据
+      menulist: [],
+      // 是否折叠
+      isCollapse: false,
+      // 被激活的链接地址
+      activePath: '',
+      iconsObj: {
+        125: 'iconfont icon-user',
+        103: 'iconfont icon-tijikongjian',
+        101: 'iconfont icon-shangpin',
+        102: 'iconfont icon-danju',
+        145: 'iconfont icon-baobiao'
       }
     }
+  },
+  created () {
+    // https://www.jianshu.com/p/5cd198945d41 vue生命周期
+    // https://blog.csdn.net/weixin_38173313/article/details/98731339
+    // vue统一处理全局异常
+    this.getMenuList()
+    this.activePath = window.sessionStorage.getItem('activePath')
+  },
+  methods: {
+    // 注销
+    logout () {
+      window.sessionStorage.clear()
+      this.$router.push('/login')
+    },
+    // 获取所有的菜单
+    async getMenuList () {
+      const { data: res } = await this.$http.get('menus')
+      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
+      this.menulist = res.data
+    },
+    // 点击按钮，切换菜单的折叠与展开
+    toggleCollapse () {
+      this.isCollapse = !this.isCollapse
+    },
+    // 保存链接的激活状态
+    saveNavState (activePath) {
+      window.sessionStorage.setItem('activePath', activePath)
+      this.activePath = activePath
+    }
   }
+}
 </script>
 
 <style lang="less" scoped>
@@ -162,4 +162,3 @@
     cursor: pointer;
   }
 </style>
-

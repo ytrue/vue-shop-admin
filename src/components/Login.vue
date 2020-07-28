@@ -29,65 +29,64 @@
 </template>
 
 <script>
-  export default {
-    name: 'Login',
-    data() {
-      return {
-        loginForm: {
-          username: '',
-          password: ''
-        },
-        loginFormRules: {
-          // 验证用户名是否合法
-          username: [
-            {required: true, message: '请输入登录名称', trigger: 'blur'},
-            {min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur'}
-          ],
-          // 验证密码是否合法
-          password: [
-            // 验证规则，提示信息，触发事件
-            {required: true, message: '请输入登录密码', trigger: 'blur'},
-            {min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur'}
-          ]
-        }
-      }
-    },
-    methods: {
-      // 点击重置按钮，重置登录表单
-      resetLoginForm() {
-        this.$refs.loginFormRef.resetFields();
+export default {
+  name: 'Login',
+  data () {
+    return {
+      loginForm: {
+        username: '',
+        password: ''
       },
-      login() {
-        this.$refs.loginFormRef.validate(async valid => {
-          if (!valid) return;
-
-          //ajax--start
-          let $message = this.$message;
-          let $router = this.$router;
-          await this.$http({
-            url: "login",
-            method: "post",
-            data: {
-              username: this.loginForm.username,
-              password: this.loginForm.password,
-            },
-          }).then(function (response) {
-            let res = response.data;
-            if (res.meta.status !== 200) return $message.error('登录失败！');
-            //做其他操作
-            $message.success('登录成功');
-            window.sessionStorage.setItem('token', res.data.token);
-            $router.push("/home")
-          }).catch(function (error) {
-            $message.error('服务器异常！');
-          })
-          //ajax---end
-
-        })
+      loginFormRules: {
+        // 验证用户名是否合法
+        username: [
+          { required: true, message: '请输入登录名称', trigger: 'blur' },
+          { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+        ],
+        // 验证密码是否合法
+        password: [
+          // 验证规则，提示信息，触发事件
+          { required: true, message: '请输入登录密码', trigger: 'blur' },
+          { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
+        ]
       }
     }
+  },
+  methods: {
+    // 点击重置按钮，重置登录表单
+    resetLoginForm () {
+      this.$refs.loginFormRef.resetFields()
+    },
+    login () {
+      this.$refs.loginFormRef.validate(async valid => {
+        if (!valid) return
 
+        // ajax--start
+        const $message = this.$message
+        const $router = this.$router
+        await this.$http({
+          url: 'login',
+          method: 'post',
+          data: {
+            username: this.loginForm.username,
+            password: this.loginForm.password
+          }
+        }).then(function (response) {
+          const res = response.data
+          if (res.meta.status !== 200) return $message.error('登录失败！')
+          // 做其他操作
+          $message.success('登录成功')
+          window.sessionStorage.setItem('token', res.data.token)
+          $router.push('/home')
+        }).catch(function () {
+          $message.error('服务器异常！')
+        })
+        // ajax---end
+      })
+    }
   }
+
+}
 </script>
 
 <style lang="less" scoped>

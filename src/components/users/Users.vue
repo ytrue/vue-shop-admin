@@ -127,259 +127,259 @@
 </template>
 
 <script>
-  export default {
-    name: 'Users',
-    data () {
-      //验证邮箱的规则
-      let checkEmail = (rule, value, cb) => {
-        const regEmail = /^\w+@\w+(\.\w+)+$/
-        if (regEmail.test(value)) {
-          return cb()
-        }
-        //返回一个错误提示
-        cb(new Error('请输入合法的邮箱'))
+export default {
+  name: 'Users',
+  data () {
+    // 验证邮箱的规则
+    const checkEmail = (rule, value, cb) => {
+      const regEmail = /^\w+@\w+(\.\w+)+$/
+      if (regEmail.test(value)) {
+        return cb()
       }
+      // 返回一个错误提示
+      cb(new Error('请输入合法的邮箱'))
+    }
 
-      //验证手机号码的规则
-      let checkMobile = (rule, value, cb) => {
-        const regMobile = /^1[34578]\d{9}$/
-        if (regMobile.test(value)) {
-          return cb()
-        }
-        //返回一个错误提示
-        cb(new Error('请输入合法的手机号码'))
+    // 验证手机号码的规则
+    const checkMobile = (rule, value, cb) => {
+      const regMobile = /^1[34578]\d{9}$/
+      if (regMobile.test(value)) {
+        return cb()
       }
-      return {
-        //获取查询用户信息的参数
-        queryInfo: {
-          query: '',
-          pagenum: 1,
-          pagesize: 5
-        },
-        //保存请求回来的用户列表数据
-        userList: [],
-        //总数
-        total: 0,
-        //是否显示添加用户弹出窗
-        addDialogVisible: false,
-        //是否显示编辑用户弹出窗
-        editDialogVisible: false,
-        // 添加用户的表单数据
-        addForm: {
-          username: '',
-          password: '',
-          email: '',
-          mobile: ''
-        },
-        // 添加表单的验证规则对象
-        addFormRules: {
-          username: [
-            {
-              required: true,
-              message: '请输入用户名称',
-              trigger: 'blur'
-            },
-            {
-              min: 3,
-              max: 10,
-              message: '用户名在3~10个字符之间',
-              trigger: 'blur'
-            }
-          ],
-          password: [
-            {
-              required: true,
-              message: '请输入密码',
-              trigger: 'blur'
-            },
-            {
-              min: 6,
-              max: 15,
-              message: '用户名在6~15个字符之间',
-              trigger: 'blur'
-            }
-          ],
-          email: [
-            {
-              required: true,
-              message: '请输入邮箱',
-              trigger: 'blur'
-            },
-            {
-              validator: checkEmail,
-              message: '邮箱格式不正确，请重新输入',
-              trigger: 'blur'
-            }
-          ],
-          mobile: [
-            {
-              required: true,
-              message: '请输入手机号码',
-              trigger: 'blur'
-            },
-            {
-              validator: checkMobile,
-              message: '手机号码不正确，请重新输入',
-              trigger: 'blur'
-            }
-          ],
-        },
-        // 查询到的用户信息对象
-        editForm: {},
-        // 修改表单的验证规则对象
-        editFormRules: {
-          email: [
-            {
-              required: true,
-              message: '请输入用户邮箱',
-              trigger: 'blur'
-            },
-            {
-              validator: checkEmail,
-              trigger: 'blur'
-            }
-          ],
-          mobile: [
-            {
-              required: true,
-              message: '请输入用户手机',
-              trigger: 'blur'
-            },
-            {
-              validator: checkMobile,
-              trigger: 'blur'
-            }
-          ]
-        },
-      }
-    },
-    created () {
-      this.getUserList()
-    },
-    methods: {
-      async removeUserById (id) {
-        //弹出确定取消框，是否删除用户
-        //弹出确定取消框，是否删除用户
-        const confirmResult = await this.$confirm('请问是否要永久删除该用户', '删除提示', {
-          confirmButtonText: '确认删除',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).catch(err => err)
-        //如果用户点击确认，则confirmResult 为'confirm'
-        //如果用户点击取消, 则confirmResult获取的就是catch的错误消息'cancel'
-        if (confirmResult !== 'confirm') {
-          return this.$message.info('已经取消删除')
-        }
-        //发送请求根据id完成删除操作
-        const { data: res } = await this.$http.delete('users/' + id)
-        if (res.meta.status !== 200) return this.$message.error('删除用户失败')
-        //修改成功的提示
-        this.$message.success('删除用户成功')
-        //重新请求最新的数据
-        this.getUserList()
+      // 返回一个错误提示
+      cb(new Error('请输入合法的手机号码'))
+    }
+    return {
+      // 获取查询用户信息的参数
+      queryInfo: {
+        query: '',
+        pagenum: 1,
+        pagesize: 5
       },
-      editUserInfo () {
-        //用户点击修改表单中的确定按钮之后，验证表单数据
-        this.$refs.editFormRef.validate(async valid => {
-          if (!valid) return this.$message.error('请填写完整用户信息')
-          //发送请求完成修改用户的操作
-          const { data: res } = await this.$http.put(
-            'users/' + this.editForm.id,
-            this.editForm
-          )
-          //判断如果修改失败，就做提示
-          if (res.meta.status !== 200) return this.$message.error('修改用户失败')
-          //修改成功的提示
-          this.$message.success('修改用户成功')
-          //关闭对话框
-          this.editDialogVisible = false
-          //重新请求最新的数据
-          this.getUserList()
-        })
+      // 保存请求回来的用户列表数据
+      userList: [],
+      // 总数
+      total: 0,
+      // 是否显示添加用户弹出窗
+      addDialogVisible: false,
+      // 是否显示编辑用户弹出窗
+      editDialogVisible: false,
+      // 添加用户的表单数据
+      addForm: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
       },
-      editDialogClosed () {
-        //对话框关闭之后，重置表达
-        this.$refs.editFormRef.resetFields()
-      },
-      // 展示编辑用户的对话框
-      async showEditDialog (id) {
-        const { data: res } = await this.$http.get('users/' + id)
-        if (res.meta.status !== 200) {
-          return this.$message.error('查询用户信息失败！')
-        }
-        this.editForm = res.data
-        this.editDialogVisible = true
-      },
-      addUser () {
-        //点击确定按钮，添加新用户
-        //调用validate进行表单验证
-        this.$refs.addFormRef.validate(async valid => {
-          if (!valid) return this.$message.error('请填写完整用户信息')
-          //发送请求完成添加用户的操作
-          const { data: res } = await this.$http.post('users', this.addForm)
-          //判断如果添加失败，就做提示
-          if (res.meta.status !== 201) {
-            return this.$message.error('添加用户失败')
+      // 添加表单的验证规则对象
+      addFormRules: {
+        username: [
+          {
+            required: true,
+            message: '请输入用户名称',
+            trigger: 'blur'
+          },
+          {
+            min: 3,
+            max: 10,
+            message: '用户名在3~10个字符之间',
+            trigger: 'blur'
           }
-          //添加成功的提示
-          this.$message.success('添加用户成功')
-          //关闭对话框
-          this.addDialogVisible = false
-          //重新请求最新的数据
-          this.getUserList()
-        })
+        ],
+        password: [
+          {
+            required: true,
+            message: '请输入密码',
+            trigger: 'blur'
+          },
+          {
+            min: 6,
+            max: 15,
+            message: '用户名在6~15个字符之间',
+            trigger: 'blur'
+          }
+        ],
+        email: [
+          {
+            required: true,
+            message: '请输入邮箱',
+            trigger: 'blur'
+          },
+          {
+            validator: checkEmail,
+            message: '邮箱格式不正确，请重新输入',
+            trigger: 'blur'
+          }
+        ],
+        mobile: [
+          {
+            required: true,
+            message: '请输入手机号码',
+            trigger: 'blur'
+          },
+          {
+            validator: checkMobile,
+            message: '手机号码不正确，请重新输入',
+            trigger: 'blur'
+          }
+        ]
       },
-      addDialogClosed () {
-        //对话框关闭之后，重置表达
-        this.$refs.addFormRef.resetFields()
-      },
-      handleSelectionChange (row) {
-        //获得选择的数据
-        //之后赋值就行，这里不做演示了
-        // console.log(row.length)
-      },
-      async getUserList () {
-        //发送请求获取用户列表数据
-        const { data: res } = await this.$http.get('users', {
-          params: this.queryInfo
-        })
-        //如果返回状态为异常状态则报错并返回
-        if (res.meta.status !== 200) {
-          return this.$message.error('获取用户列表失败')
-        }
-        //如果返回状态正常，将请求的数据保存在data中
-        this.userList = res.data.users
-        this.total = res.data.total
-      },
-      handleSizeChange (newSize) {
-        //pagesize改变时触发，当pagesize发生改变的时候，我们应该
-        //以最新的pagesize来请求数据并展示数据
-        this.queryInfo.pagesize = newSize
-        //重新按照pagesize发送请求，请求最新的数据
-        this.getUserList()
-      },
-      handleCurrentChange (current) {
-        //页码发生改变时触发当current发生改变的时候，我们应该
-        //以最新的current页码来请求数据并展示数据
-        this.queryInfo.pagenum = current
-        //重新按照pagenum发送请求，请求最新的数据
-        this.getUserList()
-      },
-      //更改状态
-      async userStateChanged (row) {
-        //发送请求进行状态修改
-        const { data: res } = await this.$http.put(
-          `users/${row.id}/state/${row.mg_state}`
-        )
-        //如果返回状态为异常状态则报错并返回
-        if (res.meta.status !== 200) {
-          row.mg_state = !row.mg_state
-          return this.$message.error('修改状态失败')
-        }
-        this.$message.success('更新状态成功')
+      // 查询到的用户信息对象
+      editForm: {},
+      // 修改表单的验证规则对象
+      editFormRules: {
+        email: [
+          {
+            required: true,
+            message: '请输入用户邮箱',
+            trigger: 'blur'
+          },
+          {
+            validator: checkEmail,
+            trigger: 'blur'
+          }
+        ],
+        mobile: [
+          {
+            required: true,
+            message: '请输入用户手机',
+            trigger: 'blur'
+          },
+          {
+            validator: checkMobile,
+            trigger: 'blur'
+          }
+        ]
       }
     }
+  },
+  created () {
+    this.getUserList()
+  },
+  methods: {
+    async removeUserById (id) {
+      // 弹出确定取消框，是否删除用户
+      // 弹出确定取消框，是否删除用户
+      const confirmResult = await this.$confirm('请问是否要永久删除该用户', '删除提示', {
+        confirmButtonText: '确认删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      // 如果用户点击确认，则confirmResult 为'confirm'
+      // 如果用户点击取消, 则confirmResult获取的就是catch的错误消息'cancel'
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已经取消删除')
+      }
+      // 发送请求根据id完成删除操作
+      const { data: res } = await this.$http.delete('users/' + id)
+      if (res.meta.status !== 200) return this.$message.error('删除用户失败')
+      // 修改成功的提示
+      this.$message.success('删除用户成功')
+      // 重新请求最新的数据
+      this.getUserList()
+    },
+    editUserInfo () {
+      // 用户点击修改表单中的确定按钮之后，验证表单数据
+      this.$refs.editFormRef.validate(async valid => {
+        if (!valid) return this.$message.error('请填写完整用户信息')
+        // 发送请求完成修改用户的操作
+        const { data: res } = await this.$http.put(
+          'users/' + this.editForm.id,
+          this.editForm
+        )
+        // 判断如果修改失败，就做提示
+        if (res.meta.status !== 200) return this.$message.error('修改用户失败')
+        // 修改成功的提示
+        this.$message.success('修改用户成功')
+        // 关闭对话框
+        this.editDialogVisible = false
+        // 重新请求最新的数据
+        this.getUserList()
+      })
+    },
+    editDialogClosed () {
+      // 对话框关闭之后，重置表达
+      this.$refs.editFormRef.resetFields()
+    },
+    // 展示编辑用户的对话框
+    async showEditDialog (id) {
+      const { data: res } = await this.$http.get('users/' + id)
+      if (res.meta.status !== 200) {
+        return this.$message.error('查询用户信息失败！')
+      }
+      this.editForm = res.data
+      this.editDialogVisible = true
+    },
+    addUser () {
+      // 点击确定按钮，添加新用户
+      // 调用validate进行表单验证
+      this.$refs.addFormRef.validate(async valid => {
+        if (!valid) return this.$message.error('请填写完整用户信息')
+        // 发送请求完成添加用户的操作
+        const { data: res } = await this.$http.post('users', this.addForm)
+        // 判断如果添加失败，就做提示
+        if (res.meta.status !== 201) {
+          return this.$message.error('添加用户失败')
+        }
+        // 添加成功的提示
+        this.$message.success('添加用户成功')
+        // 关闭对话框
+        this.addDialogVisible = false
+        // 重新请求最新的数据
+        this.getUserList()
+      })
+    },
+    addDialogClosed () {
+      // 对话框关闭之后，重置表达
+      this.$refs.addFormRef.resetFields()
+    },
+    handleSelectionChange (row) {
+      // 获得选择的数据
+      // 之后赋值就行，这里不做演示了
+      // console.log(row.length)
+    },
+    async getUserList () {
+      // 发送请求获取用户列表数据
+      const { data: res } = await this.$http.get('users', {
+        params: this.queryInfo
+      })
+      // 如果返回状态为异常状态则报错并返回
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取用户列表失败')
+      }
+      // 如果返回状态正常，将请求的数据保存在data中
+      this.userList = res.data.users
+      this.total = res.data.total
+    },
+    handleSizeChange (newSize) {
+      // pagesize改变时触发，当pagesize发生改变的时候，我们应该
+      // 以最新的pagesize来请求数据并展示数据
+      this.queryInfo.pagesize = newSize
+      // 重新按照pagesize发送请求，请求最新的数据
+      this.getUserList()
+    },
+    handleCurrentChange (current) {
+      // 页码发生改变时触发当current发生改变的时候，我们应该
+      // 以最新的current页码来请求数据并展示数据
+      this.queryInfo.pagenum = current
+      // 重新按照pagenum发送请求，请求最新的数据
+      this.getUserList()
+    },
+    // 更改状态
+    async userStateChanged (row) {
+      // 发送请求进行状态修改
+      const { data: res } = await this.$http.put(
+          `users/${row.id}/state/${row.mg_state}`
+      )
+      // 如果返回状态为异常状态则报错并返回
+      if (res.meta.status !== 200) {
+        row.mg_state = !row.mg_state
+        return this.$message.error('修改状态失败')
+      }
+      this.$message.success('更新状态成功')
+    }
   }
+}
 </script>
 
 <style scoped>
