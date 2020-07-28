@@ -18,19 +18,49 @@ VueRouter.prototype.push = function push (location) {
 }
 
 const routes = [
-  { path: '/', redirect: '/login' },
-  { path: '/login', component: Login },
+  {
+    path: '/',
+    redirect: '/home'
+  },
+  {
+    path: '/login',
+    component: Login
+  },
   {
     path: '/home',
     component: Home,
     redirect: '/welcome',
     children: [
-      { path: '/welcome', component: Welcome },
-      { path: '/users', component: Users },
-      { path: '/rights', component: Rights },
-      { path: '/roles', component: Roles },
-      { path: '/categories', component: Cate },
-      { path: "/params", component: Params  }
+      {
+        path: '/welcome',
+        component: Welcome,
+        meta: { title: '欢迎' }
+      },
+      {
+        path: '/users',
+        component: Users,
+        meta: { title: '用户列表' }
+      },
+      {
+        path: '/rights',
+        component: Rights,
+        meta: { title: '权限列表' }
+      },
+      {
+        path: '/roles',
+        component: Roles,
+        meta: { title: '角色列表' }
+      },
+      {
+        path: '/categories',
+        component: Cate,
+        meta: { title: '商品分类' }
+      },
+      {
+        path: '/params',
+        component: Params,
+        meta: { title: '分类参数' }
+      },
     ]
   }
 ]
