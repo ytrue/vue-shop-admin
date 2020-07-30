@@ -8,6 +8,8 @@ import Rights from '../components/power/Rights'
 import Roles from '../components/power/Roles'
 import Cate from '../components/goods/Cate'
 import Params from '../components/goods/Params'
+import GoodList from '../components/goods/List'
+import GoodAdd from '../components/goods/Add'
 
 Vue.use(VueRouter)
 
@@ -61,6 +63,14 @@ const routes = [
         component: Params,
         meta: { title: '分类参数' }
       },
+      {
+        path: '/goods',
+        component: GoodList
+      },
+      {
+        path: '/goods/add',
+        component: GoodAdd
+      }
     ]
   }
 ]
