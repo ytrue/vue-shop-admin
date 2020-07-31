@@ -1,10 +1,17 @@
 import axios from 'axios'
 import Vue from 'vue'
 
+// 导入进度条插件
+import NProgress from 'nprogress'
+// 导入进度条样式
+import 'nprogress/nprogress.css'
+
 // // 配置请求的跟路径
 axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
 // 全局请求处理
 axios.interceptors.request.use(config => {
+  // 当进入request拦截器，表示发送了请求，我们就开启进度条
+  NProgress.start()
   // console.log(config)
   config.headers.Authorization = window.sessionStorage.getItem('token')
   // 在最后必须 return config
@@ -13,6 +20,8 @@ axios.interceptors.request.use(config => {
 
 // 全局响应处理
 axios.interceptors.response.use(response => {
+  // 当进入response拦截器，表示请求已经结束，我们就结束进度条
+  NProgress.done()
   console.log(response)
   return response
 }, error => {
